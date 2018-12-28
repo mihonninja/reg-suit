@@ -29,7 +29,6 @@ export class S3PublisherPlugin extends AbstractPublisher implements PublisherPlu
   }
 
   init(config: PluginCreateOptions<PluginConfig>) {
-    console.log('hey init');
     this.noEmit = config.noEmit;
     this.logger = config.logger;
     this._options = config;
@@ -103,10 +102,6 @@ export class S3PublisherPlugin extends AbstractPublisher implements PublisherPlu
   }
 
   protected downloadItem(remoteItem: RemoteFileItem, item: FileItem): Promise<FileItem> {
-    console.log('downloadItem called');
-    this.logger.verbose(`getWorkingDirs ${this._options.workingDirs}`);
-    console.log('wd: ', this._options.workingDirs);
-
     const s3Key = remoteItem.remotePath;
     return new Promise((resolve, reject) => {
       this._s3client.getObject({
@@ -117,12 +112,12 @@ export class S3PublisherPlugin extends AbstractPublisher implements PublisherPlu
           return reject(err);
         }
 
-        this.logger.verbose(`s3 downloadItem coming`);
-        this.logger.verbose(`remoteItem.remotePath: ${remoteItem.remotePath}`);
-        this.logger.verbose(`item.absPath: ${item.absPath}`);
-
         mkdirp.sync(path.dirname(item.absPath) + "/");
         this._gunzipIfNeed(x, (err, content) => {
+          const regex = /.*\/expected$/g;
+          const isItFreakingExpected = regex.test(item.absPath);
+          if (isItFreakingExpected) resolve(item);
+
           fs.writeFile(item.absPath, content, (err) => {
             if (err) {
               return reject(err);
