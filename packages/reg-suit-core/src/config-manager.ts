@@ -125,6 +125,7 @@ export class ConfigManager {
 
   private _getConfigPath() {
     if (this._configFileName) {
+      this._logger.verbose(`WHERE MY LOGS`);
       this._logger.verbose(`config file: ${this._configFileName}`);
       return path.resolve(fsUtil.prjRootDir(), this._configFileName);
     } else {
