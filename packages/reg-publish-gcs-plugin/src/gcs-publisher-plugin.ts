@@ -68,7 +68,7 @@ export class GcsPublisherPlugin extends AbstractPublisher implements PublisherPl
   }
 
   protected async downloadItem({ remotePath }: RemoteFileItem, item: FileItem) {
-    mkdirp.sync(path.dirname(item.absPath));
+
     await this._gcsClient.bucket(this._pluginConfig.bucketName).file(remotePath).download({
       destination: item.absPath,
       validation: false,
