@@ -111,7 +111,12 @@ export class S3PublisherPlugin extends AbstractPublisher implements PublisherPlu
         if (err) {
           return reject(err);
         }
-        mkdirp.sync(path.dirname(item.absPath));
+
+        this.logger.verbose(`s3 downloadItem coming`);
+        this.logger.verbose(`remoteItem.remotePath: ${remoteItem.remotePath}`);
+        this.logger.verbose(`item.absPath: ${item.absPath}`);
+
+        mkdirp.sync(path.dirname(item.absPath) + "/");
         this._gunzipIfNeed(x, (err, content) => {
           fs.writeFile(item.absPath, content, (err) => {
             if (err) {
