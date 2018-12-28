@@ -70,6 +70,7 @@ export class S3PublisherPlugin extends AbstractPublisher implements PublisherPlu
   }
 
   protected getWorkingDirs(): WorkingDirectoryInfo {
+    console.log('wd: ', this._options.workingDirs);
     return this._options.workingDirs;
   }
 
