@@ -112,7 +112,8 @@ export class S3PublisherPlugin extends AbstractPublisher implements PublisherPlu
           return reject(err);
         }
 
-        mkdirp.sync(path.dirname(item.absPath) + "/");
+        mkdirp.sync(path.dirname(item.absPath));
+
         this._gunzipIfNeed(x, (err, content) => {
           const regex = /.*\/expected$/g;
           const isItFreakingExpected = regex.test(item.absPath);
