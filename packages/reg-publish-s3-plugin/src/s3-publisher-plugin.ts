@@ -103,7 +103,12 @@ export class S3PublisherPlugin extends AbstractPublisher implements PublisherPlu
 
   protected downloadItem(remoteItem: RemoteFileItem, item: FileItem): Promise<FileItem> {
     const s3Key = remoteItem.remotePath;
+
+
     return new Promise((resolve, reject) => {
+      const regex = /.*\/expected$/g;
+      const isItFreakingExpected = regex.test(item.absPath);
+
       this._s3client.getObject({
         Bucket: this._pluginConfig.bucketName,
         Key: `${s3Key}`,
@@ -112,11 +117,10 @@ export class S3PublisherPlugin extends AbstractPublisher implements PublisherPlu
           return reject(err);
         }
 
-        mkdirp.sync(path.dirname(item.absPath));
+        const pathForSync = path.dirname(item.absPath);
+        mkdirp.sync(pathForSync + '/');
 
         this._gunzipIfNeed(x, (err, content) => {
-          const regex = /.*\/expected$/g;
-          const isItFreakingExpected = regex.test(item.absPath);
           if (isItFreakingExpected) resolve(item);
 
           fs.writeFile(item.absPath, content, (err) => {
