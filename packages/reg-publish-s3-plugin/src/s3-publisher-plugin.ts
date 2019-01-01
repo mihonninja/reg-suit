@@ -117,19 +117,20 @@ export class S3PublisherPlugin extends AbstractPublisher implements PublisherPlu
           return reject(err);
         }
 
-        const pathForSync = path.dirname(item.absPath);
-        mkdirp.sync(pathForSync + '/');
+        mkdirp.sync(path.dirname(item.absPath));
 
         this._gunzipIfNeed(x, (err, content) => {
-          if (isItFreakingExpected) resolve(item);
-
-          fs.writeFile(item.absPath, content, (err) => {
-            if (err) {
-              return reject(err);
-            }
-            this.logger.verbose(`Downloaded from ${s3Key} to ${item.absPath}`);
+          if (isItFreakingExpected) {
             resolve(item);
-          });
+          } else {
+            fs.writeFile(item.absPath, content, (err) => {
+              if (err) {
+                return reject(err);
+              }
+              this.logger.verbose(`Downloaded from ${s3Key} to ${item.absPath}`);
+              resolve(item);
+            });
+          }
         });
       });
     });
